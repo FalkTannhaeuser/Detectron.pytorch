@@ -1,12 +1,15 @@
 #include <THC/THC.h>
+extern "C" {
+#include "roi_crop_cuda.h"
+}
+#include <ATen/ATen.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include "roi_crop_cuda_kernel.h"
 
 #define real float
 
-// this symbol will be resolved automatically from PyTorch libs
-extern THCState *state;
+THCState *state = at::globalContext().getTHCState();
 
 // Bilinear sampling is done in BHWD (coalescing is not obvious in BDHW)
 // we assume BHWD format in inputImages

@@ -12,7 +12,7 @@ with_cuda = False
 
 if torch.cuda.is_available():
     print('Including CUDA code.')
-    sources += ['src/nms_cuda.c']
+    sources += ['src/nms_cuda.cpp']
     headers += ['src/nms_cuda.h']
     defines += [('WITH_CUDA', None)]
     with_cuda = True
@@ -21,6 +21,7 @@ this_file = os.path.dirname(os.path.realpath(__file__))
 print(this_file)
 extra_objects = ['src/nms_cuda_kernel.cu.o']
 extra_objects = [os.path.join(this_file, fname) for fname in extra_objects]
+extra_objects += ['caffe2.lib', 'caffe2_gpu.lib', 'cudart.lib']
 print(extra_objects)
 
 ffi = create_extension(

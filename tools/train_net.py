@@ -5,7 +5,10 @@ import distutils.util
 import os
 import sys
 import pickle
-import resource
+try:
+    import resource
+except ModuleNotFoundError:  # present in Unix only
+    pass
 import traceback
 import logging
 from collections import defaultdict
@@ -39,9 +42,11 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # RuntimeError: received 0 items of ancdata. Issue: pytorch/pytorch#973
-rlimit = resource.getrlimit(resource.RLIMIT_NOFILE)
-resource.setrlimit(resource.RLIMIT_NOFILE, (4096, rlimit[1]))
-
+try:
+    rlimit = resource.getrlimit(resource.RLIMIT_NOFILE)
+    resource.setrlimit(resource.RLIMIT_NOFILE, (4096, rlimit[1]))
+except:
+    pass
 
 def parse_args():
     """Parse input arguments"""

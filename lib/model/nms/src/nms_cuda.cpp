@@ -1,9 +1,12 @@
 #include <THC/THC.h>
+extern "C" {
+#include "nms_cuda.h"
+}
+#include <ATen/ATen.h>
 #include <stdio.h>
 #include "nms_cuda_kernel.h"
 
-// this symbol will be resolved automatically from PyTorch libs
-extern THCState *state;
+THCState *state = at::globalContext().getTHCState();
 
 int nms_cuda(THCudaIntTensor *keep_out, THCudaTensor *boxes_host,
 		     THCudaIntTensor *num_out, float nms_overlap_thresh) {

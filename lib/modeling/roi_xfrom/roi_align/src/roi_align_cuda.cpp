@@ -1,10 +1,14 @@
 #include <THC/THC.h>
+extern "C" {
+#include "roi_align_cuda.h"
+}
+#include <ATen/ATen.h>
 #include <math.h>
 #include "roi_align_kernel.h"
 
-extern THCState *state;
+THCState *state = at::globalContext().getTHCState();
 
-int roi_align_forward_cuda(int aligned_height, int aligned_width, float spatial_scale,
+int roi_align_forward_cuda(int aligned_height, int aligned_width, float spatial_scale, int sampling_ratio,
                         THCudaTensor * features, THCudaTensor * rois, THCudaTensor * output)
 {
     // Grab the input tensor
@@ -33,13 +37,13 @@ int roi_align_forward_cuda(int aligned_height, int aligned_width, float spatial_
     ROIAlignForwardLaucher(
         data_flat, spatial_scale, num_rois, data_height,
         data_width, num_channels, aligned_height,
-        aligned_width, rois_flat,
+        aligned_width, sampling_ratio, rois_flat,
         output_flat, stream);
 
     return 1;
 }
 
-int roi_align_backward_cuda(int aligned_height, int aligned_width, float spatial_scale,
+int roi_align_backward_cuda(int aligned_height, int aligned_width, float spatial_scale, int sampling_ratio,
                         THCudaTensor * top_grad, THCudaTensor * rois, THCudaTensor * bottom_grad)
 {
     // Grab the input tensor
@@ -69,7 +73,7 @@ int roi_align_backward_cuda(int aligned_height, int aligned_width, float spatial
     ROIAlignBackwardLaucher(
         top_grad_flat, spatial_scale, batch_size, num_rois, data_height,
         data_width, num_channels, aligned_height,
-        aligned_width, rois_flat,
+        aligned_width, sampling_ratio, rois_flat,
         bottom_grad_flat, stream);
 
     return 1;

@@ -26,13 +26,13 @@ ext_modules = [
     Extension(
         name='utils.cython_bbox',
         sources=['utils/cython_bbox.pyx'],
-        extra_compile_args=['-Wno-cpp'],
+        extra_compile_args=[],
         include_dirs=[numpy_include]
     ),
     Extension(
         name='utils.cython_nms',
         sources=['utils/cython_nms.pyx'],
-        extra_compile_args=['-Wno-cpp'],
+        extra_compile_args=[],
         include_dirs=[numpy_include]
     )
 ]

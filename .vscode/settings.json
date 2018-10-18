@@ -1,5 +1,11 @@
 {
     "python.linting.pylintEnabled": true,
     "python.linting.flake8Enabled": false,
-    "python.autoComplete.extraPaths": ["${workspaceRoot}/lib"],
+    "python.autoComplete.extraPaths": [
+        "${workspaceRoot}/lib"
+    ],
+    "files.associations": {
+        "*.m": "octave",
+        "roi_align_kernel.h": "c"
+    },
 }

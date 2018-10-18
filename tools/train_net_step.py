@@ -4,7 +4,10 @@ import argparse
 import os
 import sys
 import pickle
-import resource
+try:
+    import resource  # present in Unix only
+except ModuleNotFoundError:
+    pass
 import traceback
 import logging
 from collections import defaultdict
@@ -35,8 +38,11 @@ logger = setup_logging(__name__)
 logging.getLogger('roi_data.loader').setLevel(logging.INFO)
 
 # RuntimeError: received 0 items of ancdata. Issue: pytorch/pytorch#973
-rlimit = resource.getrlimit(resource.RLIMIT_NOFILE)
-resource.setrlimit(resource.RLIMIT_NOFILE, (4096, rlimit[1]))
+try:
+    rlimit = resource.getrlimit(resource.RLIMIT_NOFILE)
+    resource.setrlimit(resource.RLIMIT_NOFILE, (4096, rlimit[1]))
+except:
+    pass
 
 def parse_args():
     """Parse input arguments"""

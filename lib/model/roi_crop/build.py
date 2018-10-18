@@ -12,7 +12,7 @@ with_cuda = False
 
 if torch.cuda.is_available():
     print('Including CUDA code.')
-    sources += ['src/roi_crop_cuda.c']
+    sources += ['src/roi_crop_cuda.cpp']
     headers += ['src/roi_crop_cuda.h']
     defines += [('WITH_CUDA', None)]
     with_cuda = True
@@ -21,6 +21,7 @@ this_file = os.path.dirname(os.path.realpath(__file__))
 print(this_file)
 extra_objects = ['src/roi_crop_cuda_kernel.cu.o']
 extra_objects = [os.path.join(this_file, fname) for fname in extra_objects]
+extra_objects += ['caffe2.lib', 'caffe2_gpu.lib', 'cudart.lib']
 
 ffi = create_extension(
     '_ext.roi_crop',
