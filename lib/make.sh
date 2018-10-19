@@ -4,6 +4,10 @@ if [ $(uname -o) != "Cygwin" ] ; then
     CUDA_PATH=/usr/local/cuda/
     Xcompiler_opt=-fPIC
 else
+    if [ -z "$CUDA_PATH" ] ; then
+        echo "Can't find CUDA_PATH - check your Nvidia CUDA istallation!"
+        exit 1
+    fi
     echo "Using system-wide CUDA_PATH=$CUDA_PATH"
     Xcompiler_opt=/MD
 fi
