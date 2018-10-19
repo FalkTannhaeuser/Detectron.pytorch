@@ -82,6 +82,33 @@ cd lib  # please change to this directory
 sh make.sh
 ```
 
+Under Windows:
+Be sure that all required tools (Anaconda Python, PyTorch, Nvidia CUDA) are installed.
+Verify your MSVC compiler toolsets as follows:
+If you have [Visual Studio Community 2017](https://visualstudio.microsoft.com/free-developer-offers/):
+  - Launch "Visual Studio Installer"
+  - Click the "Modify" button, then select menu "Individual components"
+  - In the left panel, scroll down to "Compilers, build tools and runtimes" category
+  - If either "VC++ 2015.3 v14.00 (v140) toolset for desktop"
+    or        "VC++ 2017 version 15.4 v14.11 toolset"
+    is already checked (i.e. installed), you can click the "Close" button in the installer.
+    In ```lib/cygwin_make.sh```, you just need to modify (comment/uncomment) the ```MSVC_TOOLSET``` variable accordingly.
+  - Otherwise, select the latter (v14.11) toolset and click the "Modify" button in the installer.
+  - Note that recent toolsets as e.g. "VC++ 2017 version 15.8 v14.15 latest v141 tools"
+    don't work with the CUDA compiler!
+
+Launch Cygwin Bash prompt (Git Bash should work too - to be confirmed!), then
+```bash
+cd lib
+./cygwin_make.sh
+```
+If you use a virtual environment of Ananconda Python, you need to specify it's name as argument,:
+```bash
+cd lib
+./cygwin_make.sh py_with_torch
+```
+
+
 If your are using Volta GPUs, uncomment this [line](https://github.com/roytseng-tw/mask-rcnn.pytorch/tree/master/lib/make.sh#L15) in `lib/mask.sh` and remember to postpend a backslash at the line above. `CUDA_PATH` defaults to `/usr/loca/cuda`. If you want to use a CUDA library on different path, change this [line](https://github.com/roytseng-tw/mask-rcnn.pytorch/tree/master/lib/make.sh#L3) accordingly.
 
 It will compile all the modules you need, including NMS, ROI_Pooing, ROI_Crop and ROI_Align. (Actually gpu nms is never used ...)
@@ -116,7 +143,7 @@ mkdir data
       ├── train2014
       ├── train2017
       ├── val2014
-      ├──val2017
+      ├── val2017
       ├── ...
   ```
   Download coco mini annotations from [here](https://s3-us-west-2.amazonaws.com/detectron/coco/coco_annotations_minival.tgz).
@@ -141,7 +168,7 @@ Download them and put them into the `{repo_root}/data/pretrained_model`.
 
 You can the following command to download them all:
 
-- extra required packages: `argparse_color_formater`, `colorama`, `requests`
+- extra required packages: `argparse-color-formatter`, `colorama`, `requests`
 
 ```
 python tools/download_imagenet_weights.py
@@ -153,14 +180,20 @@ python tools/download_imagenet_weights.py
 
 #### ImageNet Pretrained Model provided by Detectron
 
-- [R-50.pkl](https://s3-us-west-2.amazonaws.com/detectron/ImageNetPretrained/MSRA/R-50.pkl)
-- [R-101.pkl](https://s3-us-west-2.amazonaws.com/detectron/ImageNetPretrained/MSRA/R-101.pkl)
-- [R-50-GN.pkl](https://s3-us-west-2.amazonaws.com/detectron/ImageNetPretrained/47261647/R-50-GN.pkl)
-- [R-101-GN.pkl](https://s3-us-west-2.amazonaws.com/detectron/ImageNetPretrained/47592356/R-101-GN.pkl)
-- [X-101-32x8d.pkl](https://s3-us-west-2.amazonaws.com/detectron/ImageNetPretrained/20171220/X-101-32x8d.pkl)
-- [X-101-64x4d.pkl](https://s3-us-west-2.amazonaws.com/detectron/ImageNetPretrained/FBResNeXt/X-101-64x4d.pkl)
-- [X-152-32x8d-IN5k.pkl](https://s3-us-west-2.amazonaws.com/detectron/ImageNetPretrained/25093814/X-152-32x8d-IN5k.pkl)
+- ~~[R-50.pkl](https://s3-us-west-2.amazonaws.com/detectron/ImageNetPretrained/MSRA/R-50.pkl)~~
+- ~~[R-101.pkl](https://s3-us-west-2.amazonaws.com/detectron/ImageNetPretrained/MSRA/R-101.pkl)~~
+- ~~[R-50-GN.pkl](https://s3-us-west-2.amazonaws.com/detectron/ImageNetPretrained/47261647/R-50-GN.pkl)~~
+- ~~[R-101-GN.pkl](https://s3-us-west-2.amazonaws.com/detectron/ImageNetPretrained/47592356/R-101-GN.pkl)~~
+- ~~[X-101-32x8d.pkl](https://s3-us-west-2.amazonaws.com/detectron/ImageNetPretrained/20171220/X-101-32x8d.pkl)~~
+- ~~[X-101-64x4d.pkl](https://s3-us-west-2.amazonaws.com/detectron/ImageNetPretrained/FBResNeXt/X-101-64x4d.pkl)~~
+- ~~[X-152-32x8d-IN5k.pkl](https://s3-us-west-2.amazonaws.com/detectron/ImageNetPretrained/25093814/X-152-32x8d-IN5k.pkl)~~
+- [model_final.pkl](https://s3-us-west-2.amazonaws.com/detectron/35861858/12_2017_baselines/e2e_mask_rcnn_R-101-FPN_2x.yaml.02_32_51.SgT4y1cO/output/train/coco_2014_train:coco_2014_valminusminival/generalized_rcnn/model_final.pkl) - about 490 MB
 
+Put the images to analyze into ```data/input_pics``` folder and the pretrained model into ```data/pretrained_model/model_final.pkl```.
+The command line from Cygwin Bash prompt is:
+```bash
+python -u tools/infer_simple.py --dataset coco2017 --cfg configs/baselines/e2e_mask_rcnn_R-101-FPN_2x.yaml --load_detectron data/pretrained_model/model_final.pkl --image_dir data/input_pics/ --output_dir data/result_pics
+```
 Besides of using the pretrained weights for ResNet above, you can also use the weights from Detectron by changing the corresponding line in model config file as follows:
 ```
 RESNETS:
@@ -181,8 +214,8 @@ Use the environment variable `CUDA_VISIBLE_DEVICES` to control which GPUs to use
 
 #### Let's define some terms first
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; batch_size:            `NUM_GPUS` x `TRAIN.IMS_PER_BATCH`  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; effective_batch_size:  batch_size x `iter_size`  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; batch_size:            `NUM_GPUS` x `TRAIN.IMS_PER_BATCH`
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; effective_batch_size:  batch_size x `iter_size`
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; change of somethining: `new value of something / old value of something`
 
 Following config options will be adjusted **automatically** according to actual training setups: 1) number of GPUs `NUM_GPUS`, 2) batch size per GPU `TRAIN.IMS_PER_BATCH`, 3) update period `iter_size`
