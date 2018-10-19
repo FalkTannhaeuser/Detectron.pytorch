@@ -28,7 +28,7 @@ cd $REPO_ROOT/lib
 # Check if 'python' command refers to Anaconda Python, rather than Cywin's
 # If necessary, activate Anaconda requested virtual environment
 if ! type python | grep -i conda ; then
-    if ! . /cygdrive/c/ProgramData/*conda3/Scripts/activate $1 ; then
+    if ! . $(cygpath "C:\ProgramData\*conda3\Scripts\activate") $1 ; then
         if ! . $(cygpath $USERPROFILE)/*conda3/Scripts/activate $1 ; then
             echo "Can't find Anaconda 'python' command :-("
             echo "Call '. activate' before launching '$0'!"
@@ -49,6 +49,7 @@ fi
 # Set the environment variables for Visual C++ compiler (using Windows command shell for calling .bat file)
 # If successful ('cl' is accessible), then launch make.sh (using Cygwin Bash)
 VCVARSALL="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat"
+#VCVARSALL="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"
 BASH_FROM_WINDOWS=$(cygpath -w $(type -p bash))
 cmd /c "$(cygpath -ws "$VCVARSALL") x64 -vcvars_ver=$MSVC_TOOLSET && cl > NUL: && $BASH_FROM_WINDOWS make.sh"
 
