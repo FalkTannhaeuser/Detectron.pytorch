@@ -68,7 +68,7 @@ if [ ! -f "$VCVARSALL" ] ; then
 	fi
 fi
 BASH_FROM_WINDOWS=$(cygpath -ws $(type -p bash.exe))
-cmd ${slash}c "$(cygpath -ws "$VCVARSALL") x64 && cl > NUL: && $BASH_FROM_WINDOWS make.sh"
+cmd ${slash}c "$(cygpath -ws "$VCVARSALL") x64 $VCVARS_VER && cl > NUL: && $BASH_FROM_WINDOWS make.sh"
 
 # These files get converted to CR/LF endings by PyTorch - ${CONDA_PREFIX}/lib/site-packages/torch/utils/ffi/__init__.py
 # during compilation, which is confusing for the Git user
