@@ -1,15 +1,20 @@
 #!/usr/bin/env bash
 
-if [ $(uname -o) != "Cygwin" ] ; then
-    CUDA_PATH=/usr/local/cuda/
-    Xcompiler_opt=-fPIC
-else
+if [ $(uname -o) == "Cygwin" ] || [ $(uname -o) == "Msys" ] ; then
     if [ -z "$CUDA_PATH" ] ; then
         echo "Can't find CUDA_PATH - check your Nvidia CUDA istallation!"
         exit 1
     fi
     echo "Using system-wide CUDA_PATH=$CUDA_PATH"
-    Xcompiler_opt=/MD
+	if [ $(uname -o) == "Msys" ] ; then
+		# Git Bash misinterprets single /
+		Xcompiler_opt=//MD
+	else
+		Xcompiler_opt=/MD
+	fi
+else
+    CUDA_PATH=/usr/local/cuda/
+    Xcompiler_opt=-fPIC
 fi
 
 python setup.py build_ext --inplace

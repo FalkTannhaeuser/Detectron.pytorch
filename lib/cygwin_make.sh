@@ -1,5 +1,6 @@
+#!/bin/bash
 ##########################################################################
-# Compilation under Cygwin:
+# Compilation under Cygwin or Git Bash:
 # Usage:    ./cygwin_make.sh [python_environment]
 ##########################################################################
 
@@ -39,24 +40,40 @@ fi
 type python
 
 # Check if PyTorch is installed
-if ! python -c 'import torch ; print("PyTorch version:", torch.__version__)' ; then
-    echo "PyTorch is not installed in your Anaconda Python environment :-("
+if ! python -c 'import torch, torchvision ; print("PyTorch version: {} with CUDA {}, Debug={}; torchvision version {}".format(torch.__version__, torch.version.cuda, torch.version.debug, torchvision.__version__))' ; then
+    echo "PyTorch or torchvision are not installed in your Anaconda Python environment :-("
+	echo "Please refer to https://pytorch.org/ for installation instructions!"
     echo "If it has been installed in a virtual environment, pass the environment's name as command line argument, e.g."
     echo "    $0 py_with_torch"
     exit 1
 fi
 
+if [ $(uname -o) == "Msys" ] ; then
+	# Git Bash misinterprets single / followed by letter as drive name :-[]
+	slash=//
+else
+	slash=/
+fi
+
 # Set the environment variables for Visual C++ compiler (using Windows command shell for calling .bat file)
 # If successful ('cl' is accessible), then launch make.sh (using Cygwin Bash)
 VCVARSALL="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat"
-#VCVARSALL="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"
-BASH_FROM_WINDOWS=$(cygpath -w $(type -p bash))
-cmd /c "$(cygpath -ws "$VCVARSALL") x64 -vcvars_ver=$MSVC_TOOLSET && cl > NUL: && $BASH_FROM_WINDOWS make.sh"
+VCVARS_VER=-vcvars_ver=$MSVC_TOOLSET
+if [ ! -f "$VCVARSALL" ] ; then
+	VCVARSALL="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"
+	VCVARS_VER=
+	if [ ! -f "$VCVARSALL" ] ; then
+		echo "Can't find Visual C++ installation :-("
+		exit 1
+	fi
+fi
+BASH_FROM_WINDOWS=$(cygpath -ws $(type -p bash.exe))
+cmd ${slash}c "$(cygpath -ws "$VCVARSALL") x64 && cl > NUL: && $BASH_FROM_WINDOWS make.sh"
 
 # These files get converted to CR/LF endings by PyTorch - ${CONDA_PREFIX}/lib/site-packages/torch/utils/ffi/__init__.py
 # during compilation, which is confusing for the Git user
-d2u -k model/nms/_ext/nms/__init__.py model/roi_crop/_ext/roi_crop/__init__.py \
-       model/roi_pooling/_ext/roi_pooling/__init__.py modeling/roi_xfrom/roi_align/_ext/roi_align/__init__.py
+#d2u -k model/nms/_ext/nms/__init__.py model/roi_crop/_ext/roi_crop/__init__.py \
+#       model/roi_pooling/_ext/roi_pooling/__init__.py modeling/roi_xfrom/roi_align/_ext/roi_align/__init__.py
 
 # Print results
 echo "Created the following binaries:"
