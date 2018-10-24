@@ -142,7 +142,7 @@ def main():
     for i in xrange(num_images):
         print('img', i)
         im = cv2.imread(imglist[i])
-        assert im is not None
+        assert im is not None, f"Couldn't read image '{imglist[i]}'"
 
         timers = defaultdict(Timer)
 

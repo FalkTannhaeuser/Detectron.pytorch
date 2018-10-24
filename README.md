@@ -37,7 +37,7 @@ This implementation has the following features:
 
 - **It supports three pooling methods**. Notice that only **roi align** is revised to match the implementation in Caffe2. So, use it.
 
-- **It is memory efficient**. For data batching, there are two techiniques available to reduce memory usage: 1) *Aspect grouping*: group images with similar aspect ratio in a batch 2) *Aspect cropping*: crop images that are too long. Aspect grouping is implemented in Detectron, so it's used for default. Aspect cropping is the idea from [jwyang/faster-rcnn.pytorch](https://github.com/jwyang/faster-rcnn.pytorch), and it's not used for default.
+- **It is memory efficient**. For data batching, there are two techniques available to reduce memory usage: 1) *Aspect grouping*: group images with similar aspect ratio in a batch 2) *Aspect cropping*: crop images that are too long. Aspect grouping is implemented in Detectron, so it's used for default. Aspect cropping is the idea from [jwyang/faster-rcnn.pytorch](https://github.com/jwyang/faster-rcnn.pytorch), and it's not used for default.
 
   Besides of that, I implement a customized `nn.DataParallel ` module which enables different batch blob size on different gpus. Check [My nn.DataParallel](#my-nndataparallel) section for more details about this.
 
@@ -51,7 +51,7 @@ This implementation has the following features:
 Clone the repo:
 
 ```
-git clone https://github.com/roytseng-tw/mask-rcnn.pytorch.git
+git clone https://github.com/FalkTannhaeuser/Detectron.pytorch.git
 ```
 
 ### Requirements
@@ -69,8 +69,18 @@ Tested under python3.
   - pyyaml
   - packaging
   - [pycocotools](https://github.com/cocodataset/cocoapi)  — for COCO dataset, also available from pip.
+
+    **Under Windows / Anaconda:** A patched version of pycocotools is needed (```pip install``` fails!).
+    - Launch a Bash command prompt. (If your Anaconda installation is 'for all users', you need to run it as administrator).
+    - Change to your desired working directory.
+    - Clone from [here](https://github.com/FalkTannhaeuser/cocoapi), then run installation as follows:
+      ```bash
+      git clone https://github.com/FalkTannhaeuser/cocoapi.git
+      cd cocoapi/PythonAPI
+      python setup.py build_ext install
+      ```
   - tensorboardX  — for logging the losses in Tensorboard
-- An NVIDAI GPU and CUDA 8.0 or higher. Some operations only have gpu implementation.
+- An NVIDIA GPU and CUDA 8.0 or higher. Some operations only have gpu implementation.
 - **NOTICE**: different versions of Pytorch package have different memory usages.
 
 ### Compilation
@@ -82,7 +92,7 @@ cd lib  # please change to this directory
 sh make.sh
 ```
 
-Under Windows:
+**Under Windows**:
 Be sure that all required tools (Anaconda Python, PyTorch, Nvidia CUDA) are installed.
 Verify your MSVC compiler toolsets as follows:
 If you have [Visual Studio Community 2017](https://visualstudio.microsoft.com/free-developer-offers/):
@@ -97,12 +107,12 @@ If you have [Visual Studio Community 2017](https://visualstudio.microsoft.com/fr
   - Note that recent toolsets as e.g. "VC++ 2017 version 15.8 v14.15 latest v141 tools"
     don't work with the CUDA compiler!
 
-Launch Cygwin Bash prompt (Git Bash should work too - to be confirmed!), then
+Launch Cygwin Bash prompt or Git Bash prompt, then
 ```bash
 cd lib
 ./cygwin_make.sh
 ```
-If you use a virtual environment of Ananconda Python, you need to specify it's name as argument,:
+If you use a virtual environment of Anaconda Python, you need to specify its name as argument, e.g.:
 ```bash
 cd lib
 ./cygwin_make.sh py_with_torch
@@ -210,7 +220,7 @@ X-101-32x8d.pkl, X-101-64x4d.pkl and X-152-32x8d-IN5k.pkl are required for ResNe
 
 Use the environment variable `CUDA_VISIBLE_DEVICES` to control which GPUs to use.
 
-### Adapative config adjustment
+### Adaptive config adjustment
 
 #### Let's define some terms first
 
@@ -220,8 +230,8 @@ Use the environment variable `CUDA_VISIBLE_DEVICES` to control which GPUs to use
 
 Following config options will be adjusted **automatically** according to actual training setups: 1) number of GPUs `NUM_GPUS`, 2) batch size per GPU `TRAIN.IMS_PER_BATCH`, 3) update period `iter_size`
 
-- `SOLVER.BASE_LR`: adjust directly propotional to the change of batch_size.
-- `SOLVER.STEPS`, `SOLVER.MAX_ITER`: adjust inversely propotional to the change of effective_batch_size.
+- `SOLVER.BASE_LR`: adjust directly proportional to the change of batch_size.
+- `SOLVER.STEPS`, `SOLVER.MAX_ITER`: adjust inversely proportional to the change of effective_batch_size.
 
 ### Train from scratch
 Take mask-rcnn with res50 backbone for example.
@@ -268,7 +278,7 @@ When resume the training, **step count** and **optimizer state** will also be re
   ```
   python tools/train_net_step.py ... --no_save --set DEBUG True
   ```
-  Load less annotations to accelarate training progress. Add `--no_save` to avoid saving any checkpoint or logging.
+  Load less annotations to accelerate training progress. Add `--no_save` to avoid saving any checkpoint or logging.
 
 ### Show command line help messages
 ```
@@ -305,7 +315,7 @@ python tools/test_net.py --dataset coco2017 --cfg config/baselines/e2e_mask_rcnn
 ```
 Use `--load_detectron` to load Detectron's checkpoint. If multiple gpus are available, add `--multi-gpu-testing`.
 
-Specify a different output directry, use `--output_dir {...}`. Defaults to `{the/parent/dir/of/checkpoint}/test`
+Specify a different output directory, use `--output_dir {...}`. Defaults to `{the/parent/dir/of/checkpoint}/test`
 
 ### Visualize the training results on images
 ```
@@ -368,7 +378,7 @@ Architecture specific configuration files are put under [configs](configs/). The
 - **Keep certain keyword inputs on cpu**
   Official DataParallel will broadcast all the input Variables to GPUs. However, many rpn related computations are done in CPU, and it's unnecessary to put those related inputs on GPUs.
 - **Allow Different blob size for different GPU**
-  To save gpu memory, images are padded seperately for each gpu.
+  To save gpu memory, images are padded separately for each gpu.
 - **Work with returned value of dictionary type**
 
 ## Benchmark
