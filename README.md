@@ -72,6 +72,11 @@ Tested under python3.
 
     **Under Windows / Anaconda:** A patched version of pycocotools is needed (```pip install``` fails!).
     - Launch a Bash command prompt. (If your Anaconda installation is 'for all users', you need to run it as administrator).
+    - Activate the desired Anaconda Python environment, e.g.
+      ```
+      source "C:\ProgramData\Anaconda3\Scripts\activate" py_with_torch
+      ```
+      (replacing ```py_with_torch``` with the name of your environment, or omitting it to use the root environment)
     - Change to your desired working directory.
     - Clone from [here](https://github.com/FalkTannhaeuser/cocoapi), then run installation as follows:
       ```bash
@@ -109,14 +114,9 @@ If you have [Visual Studio Community 2017](https://visualstudio.microsoft.com/fr
 
 Launch Cygwin Bash prompt or Git Bash prompt, then
 ```bash
-cd lib
-./cygwin_make.sh
+./lib/cygwin_make.sh py_with_torch
 ```
-If you use a virtual environment of Anaconda Python, you need to specify its name as argument, e.g.:
-```bash
-cd lib
-./cygwin_make.sh py_with_torch
-```
+(replacing ```py_with_torch``` with the name of your environment, or omitting it to use the root environment)
 
 
 If your are using Volta GPUs, uncomment this [line](https://github.com/roytseng-tw/mask-rcnn.pytorch/tree/master/lib/make.sh#L15) in `lib/mask.sh` and remember to postpend a backslash at the line above. `CUDA_PATH` defaults to `/usr/loca/cuda`. If you want to use a CUDA library on different path, change this [line](https://github.com/roytseng-tw/mask-rcnn.pytorch/tree/master/lib/make.sh#L3) accordingly.
