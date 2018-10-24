@@ -29,8 +29,8 @@ cd $REPO_ROOT/lib
 # Check if 'python' command refers to Anaconda Python, rather than Cywin's
 # If necessary, activate Anaconda requested virtual environment
 if ! type python | grep -i conda ; then
-    if ! . $(cygpath "C:\ProgramData\*conda3\Scripts\activate") $1 ; then
-        if ! . $(cygpath $USERPROFILE)/*conda3/Scripts/activate $1 ; then
+    if ! . $(cygpath "$USERPROFILE\AppData\Local\Continuum\*conda3\Scripts\activate") $1 ; then
+        if ! . $(cygpath "C:\ProgramData\*conda3\Scripts\activate") $1 ; then
             echo "Can't find Anaconda 'python' command :-("
             echo "Call '. activate' before launching '$0'!"
             exit 1
